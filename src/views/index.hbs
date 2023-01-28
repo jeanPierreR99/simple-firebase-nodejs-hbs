@@ -1,0 +1,141 @@
+<div class="card" style="display: flex;flex-direction:row; width:80%;margin-top:40px">
+    <div class="card-body">
+
+        <h1>Form Real Time Front</h1>
+
+        <form id="form">
+            <div class="form-group">
+                <label for="">nombre</label>
+                <input autofocus type="text" class="form-control" id="name">
+            </div>
+            <div class="form-group">
+                <label for="">apellido</label>
+                <input type="text" class="form-control" id="lastName">
+            </div>
+            <button type="button" class="btn btn-primary btn-block" onclick="addUsers()">enviar</button>
+        </form>
+    </div>
+    <div class="card-footer" style="width: 60%;">
+        <div class="card-body">
+            <table class="table">
+                <tr>
+                    <th>#</th>
+                    <th>nombre</th>
+                    <th>apellido</th>
+                    <th>opcion</th>
+                </tr>
+                <tbody id="card">
+
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="card" style="display: flex;flex-direction:row; width:80%;margin-top:40px">
+    <div class="card-body">
+
+        <h1>Form Server hbs</h1>
+
+        <form action="/new-client" method="post">
+            <div class="form-group">
+                <label for="">nombre</label>
+                <input autofocus type="text" class="form-control" name="name">
+            </div>
+            <div class="form-group">
+                <label for="">apellido</label>
+                <input type="text" class="form-control" name="lastName">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">enviar</button>
+        </form>
+    </div>
+    <div class="card-footer" style="width: 60%;">
+        <div class="card-body">
+            <table class="table">
+                <tr>
+                    <th>nombre</th>
+                    <th>apellido</th>
+                    <th>opcion</th>
+                </tr>
+                <tbody id="card">
+                    {{#if clients}}
+                    {{#each clients}}
+                    <tr>
+                        <td>{{name}}</td>
+                        <td>{{password}}</td>
+                        <td><a class="btn btn-warning btn-block" href="/delete-client/{{@key}}">eliminar</a></td>
+                    </tr>
+                    {{/each}}
+                    {{else}}
+                    <h2>no existe</h2>
+                    {{/if}}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyDgB8KSVNoOpDEIv_7Vy4I_KXGjf-FtaCo",
+        authDomain: "node-firebase-68a15.firebaseapp.com",
+        databaseURL: "https://node-firebase-68a15-default-rtdb.firebaseio.com",
+        projectId: "node-firebase-68a15",
+        storageBucket: "node-firebase-68a15.appspot.com",
+        messagingSenderId: "529267418374",
+        appId: "1:529267418374:web:e771bcacc50c9bfc336a87"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    let box = document.getElementById('card')
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        getUsers();
+    })
+
+    function getUsers() {
+        db.ref('users').on('value', (snapshot) => {
+            var data = snapshot.val();
+            var htmlData = "";
+            let ctx = 0;
+            for (var key in data) {
+
+                ctx++;
+                var value = data[key];
+                htmlData += `
+            <tr>
+                <td>${ctx}</td>
+                <td>${value.name}</td>
+                <td>${value.password}</td>
+                <td><button class="btn btn-danger btn-block" onclick="deleteUsers('${key}')">eliminar</button></td>
+            </tr>
+        `;
+            }
+            box.innerHTML = htmlData;
+        })
+    }
+
+    var nam = document.getElementById('name');
+    var last = document.getElementById('lastName');
+
+    function addUsers() {
+        const user = {
+            name: nam.value,
+            password: last.value
+        }
+        db.ref('users').push(user);
+        clearIunputs()
+    }
+
+    function clearIunputs() {
+        nam.value = "";
+        last.value = "";
+    }
+    function deleteUsers(llave) {
+        db.ref('users/' + llave).remove();
+    }
+</script>

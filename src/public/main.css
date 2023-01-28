@@ -1,0 +1,14 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+body{
+    background: rgb(234, 248, 249);
+}
+.form-group{
+    display: flex;
+    flex-direction: column;
+}
+label{
+    text-align: left;
+}
